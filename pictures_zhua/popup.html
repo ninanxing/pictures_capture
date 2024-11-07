@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片下载管理器</title>
+    <style>
+        body {
+      width: 400px;
+            padding: 10px;
+        }
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .image-item {
+      position: relative;
+    }
+    .image-item img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+    .image-item input[type="checkbox"] {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .filter-options {
+            display: flex;
+      gap: 10px;
+            align-items: center;
+        }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress {
+      width: 0%;
+      height: 100%;
+      background-color: #4CAF50;
+      transition: width 0.3s;
+        }
+    .error-message {
+      color: red;
+      padding: 20px;
+      text-align: center;
+    }
+    .image-container {
+        position: relative;
+        margin: 10px;
+        width: 200px;
+        height: 200px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-checkbox {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 2;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .image-wrapper {
+        width: 100%;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .image-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .file-name {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+        text-align: center;
+    }
+
+    .image-size {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+    }
+
+    .image-wrapper:hover {
+        border-color: #1a73e8;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    #imageGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+        width: 400px;
+        margin: 0 auto;
+    }
+
+    .image-container {
+        position: relative;
+        width: 180px;
+        height: 180px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 5px;
+    }
+
+    .image-wrapper {
+        width: 100%;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .image-checkbox {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        z-index: 2;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .file-name {
+        font-size: 11px;
+        color: #666;
+        margin-top: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 95%;
+        text-align: center;
+    }
+
+    .image-size {
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 1px 4px;
+        border-radius: 2px;
+        font-size: 10px;
+    }
+
+    .image-container .image-checkbox:checked + .image-wrapper {
+        border-color: #1a73e8;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .image-wrapper:hover::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(26, 115, 232, 0.1);
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    </style>
+</head>
+<body>
+  <div class="controls">
+    <div class="filter-options">
+      <label for="imageType">图片类型：</label>
+      <select id="imageType" title="选择图片类型">
+        <option value="all">全部</option>
+        <option value="jpg">JPG</option>
+        <option value="jpeg">JPEG</option>
+        <option value="png">PNG</option>
+        <option value="gif">GIF</option>
+        <option value="webp">WebP</option>
+        <option value="svg">SVG</option>
+        <option value="ico">ICO</option>
+        <option value="bmp">BMP</option>
+      </select>
+      <label for="minSize">最小尺寸：</label>
+      <select id="minSize" title="选择最小图片尺寸">
+        <option value="0">不限</option>
+        <option value="100">100x100</option>
+        <option value="300">300x300</option>
+        <option value="500">500x500</option>
+      </select>
+    </div>
+    <div class="button-group">
+        <button id="selectAll">全选</button>
+        <button id="deselectAll">取消全选</button>
+        <button id="download">下载选中图片</button>
+    </div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress"></div>
+  </div>
+  <div id="imageGrid" class="image-grid"></div>
+    <script src="popup.js"></script>
+</body>
+</html> 

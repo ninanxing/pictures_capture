@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "图片下载助手",
+  "version": "1.0",
+  "description": "一键下载网页中的所有图片",
+  "permissions": [
+    "downloads",
+    "tabs",
+    "activeTab"
+  ],
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+} 
